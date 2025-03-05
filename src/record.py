@@ -2,6 +2,7 @@ from pathlib import Path
 import shutil
 
 import numpy as np
+import torch
 import tifffile
 import matplotlib.pyplot as plt
 from PIL import Image
@@ -28,6 +29,16 @@ def save_result(filename: str, save_dir: Path, c: np.ndarray):
         save_dir.joinpath("img").joinpath(f"{filename}.png")
     )
     plt.close(fig)
+
+
+def save_tmp_fig(c: np.ndarray | torch.Tensor, save_dir: Path, filename: str, dim: int):
+    if dim == 2:
+        tmp_fig = fig_2d(c, filename)
+    elif dim == 3:
+        tmp_fig = fig_3d(c, filename)
+    tmp_fig.savefig(save_dir.joinpath("tmp").joinpath(f"{filename}.png"))
+    tmp_fig.clear()
+    plt.close(tmp_fig)  # メモリ解放
 
 
 def fig_3d(c: np.ndarray, filename: str):
