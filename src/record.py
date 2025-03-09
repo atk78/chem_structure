@@ -11,18 +11,21 @@ from PIL import Image
 def save_result(filename: str, save_dir: Path, c: np.ndarray):
     c = (c - c.min()) / (c.max() - c.min())
     c = c.astype(np.float16)
+    tif_c = np.where(c < 0.5, 0, 255)
+    tif_c = tif_c.astype(np.uint8)
     np.save(
         save_dir.joinpath("npy").joinpath(f"{filename}.npy"), c
     )
     if len(c.shape) == 2:
         tifffile.imwrite(
-            save_dir.joinpath("tif").joinpath(f"{filename}.tif"), c
+            save_dir.joinpath("tif").joinpath(f"{filename}.tif"),
+            tif_c
         )
         fig = fig_2d(c, filename)
     elif len(c.shape) == 3:
         tifffile.imwrite(
             save_dir.joinpath("tif").joinpath(f"{filename}.tif"),
-            c.transpose((2, 0, 1))
+            tif_c.transpose((2, 0, 1))
         )
         fig = fig_3d(c, filename)
     fig.savefig(
@@ -43,8 +46,8 @@ def save_tmp_fig(c: np.ndarray | torch.Tensor, save_dir: Path, filename: str, di
 
 def fig_3d(c: np.ndarray, filename: str):
     X, Y, Z = np.meshgrid(
-        np.arange(c.shape[0]),
         np.arange(c.shape[1]),
+        np.arange(c.shape[0]),
         c.shape[2] - np.arange(c.shape[2])
     )
 
@@ -119,7 +122,7 @@ def make_animation(save_dir: Path, tmp_dir:  Path):
         fp=save_dir.joinpath("img").joinpath("anime.gif"),
         save_all=True,  # gif形式で保存する
         append_images=imgs[1:],  # 後続の残りの画像
-        optimize=False,  # たまにおかしくなる。その時はFalse
+        optimize=True,  # たまにおかしくなる。その時はFalse
         duration=100,  # フレーム時間 ms
         loop=0  # loopを行う
     )
