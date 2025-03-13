@@ -44,7 +44,7 @@ def save_tmp_fig(c: np.ndarray | torch.Tensor, save_dir: Path, filename: str, di
     plt.close(tmp_fig)  # メモリ解放
 
 
-def fig_3d(c: np.ndarray, filename: str):
+def fig_3d(c: np.ndarray, title: str):
     X, Y, Z = np.meshgrid(
         np.arange(c.shape[1]),
         np.arange(c.shape[0]),
@@ -97,14 +97,14 @@ def fig_3d(c: np.ndarray, filename: str):
     # Set zoom and angle view
     ax.view_init(40, -30, 0)
     ax.set_box_aspect(None, zoom=0.9)
-    ax.set_title(filename)
+    ax.set_title(title)
 
     # Colorbar
     fig.colorbar(C, ax=ax, fraction=0.02, pad=0.1, label="c")
     return fig
 
 
-def fig_2d(c: np.ndarray, filename: str):
+def fig_2d(c: np.ndarray, title: str):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     im = ax.imshow(c, cmap="jet", vmin=0, vmax=1)
@@ -112,7 +112,7 @@ def fig_2d(c: np.ndarray, filename: str):
     ax.set_ylabel("Y [mesh]")
     cbar = fig.colorbar(im, ax=ax)
     cbar.set_label("c")
-    ax.set_title(filename)
+    ax.set_title(title)
     return fig
 
 
